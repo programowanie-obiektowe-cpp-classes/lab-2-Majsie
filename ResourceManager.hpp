@@ -1,22 +1,26 @@
 #pragma once
 
+#include <iostream>
 #include "Resource.hpp"
 
 class ResourceManager {
-private:
-    Resource resource;
+    private:
+    std::shared_ptr<Resource> resource; 
 
-public:
-    ResourceManager() : resource() {}
-
-    double get() {
-        return resource.get();
+    public:
+        ResourceManager() : resource(std::make_shared<Resource>()) {}
+          double get() {
+        if (resource) {
+            return resource->get(); 
+        } else {
+            std::cerr << "Brak inicjalizacji.";
+        }
     }
 
-    ~ResourceManager() = default;
-
     ResourceManager(const ResourceManager& other) : resource(other.resource) {}
-
+    
+    ResourceManager(ResourceManager&& other) noexcept : resource(std::move(other.resource)) {}
+    
     ResourceManager& operator=(const ResourceManager& other) {
         if (this != &other) {
             resource = other.resource;
@@ -24,12 +28,12 @@ public:
         return *this;
     }
 
-    ResourceManager(ResourceManager&& other) noexcept : resource(std::move(other.resource)) {}
-
     ResourceManager& operator=(ResourceManager&& other) noexcept {
         if (this != &other) {
             resource = std::move(other.resource);
         }
         return *this;
     }
+
+    ~ResourceManager() {}
 };
